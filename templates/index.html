@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Code Tools</title>
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+      #main {
+        
+        margin: 0 auto;
+        background-color: #f2f2f2;
+          justify-content: center; /* Horizontal centering */
+          align-items: center; /* Vertical centering */
+          height: 100vh; /* 100% viewport height for vertical centering */
+          text-align: center; /* Horizontal centering for inline content */
+      }
+    </style>
+      
+    
+</head>
+<body>
+    <div id="main" class="container">
+        <h1>Code Tools</h1>
+        <textarea id="codeInput" rows="10" cols="50" placeholder="Enter your code here"></textarea>
+        <br>
+        <select id="toolSelect">
+            <option value="codeDebugger">Code Debugger</option>
+            <option value="codeConverter">Code Converter</option>
+            <option value="codeQualityChecker">Code Quality Checker</option>
+        </select>
+        <br>
+        <div id="languageSelect" style="display: none;">
+            <label for="language">Select a language:</label>
+            <select id="language">
+                <option value="java">Java</option>
+                <option value="javascript">JavaScript</option>
+                <option value="cpp">C++</option>
+                <option value="c">C</option>
+                <option value="csharp">C#</option>
+            </select>
+        </div>
+        <br>
+        <button id="submitButton">Submit</button>
+        <br>
+        <div id="result"></div>
+    </div>
+    <script>
+        const codeInput = document.getElementById("codeInput");
+        const toolSelect = document.getElementById("toolSelect");
+        const languageSelect = document.getElementById("languageSelect");
+        const language = document.getElementById("language");
+        const submitButton = document.getElementById("submitButton");
+        const result = document.getElementById("result");
+
+        toolSelect.addEventListener("change", () => {
+            if (toolSelect.value === "codeConverter") {
+                languageSelect.style.display = "block";
+            } else {
+                languageSelect.style.display = "none";
+            }
+        });
+
+        submitButton.addEventListener("click", () => {
+            const code = codeInput.value;
+            const tool = toolSelect.value;
+            const selectedLanguage = language.value;
+            const obj = {
+                code: code,
+                lang: selectedLanguage
+            };
+
+            fetch(`/api/${tool}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(obj)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const cod = data["text"] || 'No data available';
+              console.log(cod)
+                result.innerHTML =  `<pre>${cod["text"]}</pre>`;
+            })
+            .catch(error => {
+                result.textContent = "An error occurred: " + error.message;
+            });
+        });
+
+    </script>
+</body>
+</html>
